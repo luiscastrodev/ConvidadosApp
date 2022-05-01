@@ -24,8 +24,6 @@ class GuestFormActivity : AppCompatActivity(), View.OnClickListener {
 
         setListeners()
         observe()
-
-        mViewModel.get(1)
     }
 
     override fun onClick(v: View) {
@@ -47,6 +45,7 @@ class GuestFormActivity : AppCompatActivity(), View.OnClickListener {
             }else{
                 Toast.makeText(applicationContext,"Erro",Toast.LENGTH_SHORT).show()
             }
+            this.finish()
         })
 
         mViewModel.getGuest.observe(this,{

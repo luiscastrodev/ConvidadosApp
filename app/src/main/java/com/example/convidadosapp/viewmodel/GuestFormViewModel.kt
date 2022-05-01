@@ -10,7 +10,7 @@ import com.example.convidadosapp.service.model.GuestModel
 import com.example.convidadosapp.repository.GuestRespository
 
 //Para usar context na aplicacao viewmodel ou passa por construtor ou passa o aplication
-//precisavos estender de AndroidViewModel para usar contexto
+//precisavos estender de AndroidViewModel para usar contexto da aplicacao
 class GuestFormViewModel (application: Application): AndroidViewModel(application) {
 
     private val mContext = application.applicationContext
