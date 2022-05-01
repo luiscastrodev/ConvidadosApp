@@ -64,7 +64,7 @@ class GuestRespository private constructor(context: Context) {
 
             db.delete(DataBaseConstants.GUEST.TABLE_NAME, selection, args)
 
-            true
+             true
         } catch (e: Exception) {
             false
         }

@@ -1,20 +1,24 @@
 package com.example.convidadosapp.view
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.convidadosapp.databinding.FragmentAllguestsBinding
+import com.example.convidadosapp.repository.constants.GuestConstants
 import com.example.convidadosapp.view.adapter.GuestAdapter
-import com.example.convidadosapp.viewmodel.AllViewModel
+import com.example.convidadosapp.view.listener.IGuestListener
+import com.example.convidadosapp.viewmodel.GuestsViewModel
 
-class AllFragment : Fragment() {
+class AllFragment : Fragment(), IGuestListener {
 
-    private lateinit var allViewModel: AllViewModel
+    private lateinit var guestsViewModel: GuestsViewModel
     private var _binding: FragmentAllguestsBinding? = null
     private val mAdapter: GuestAdapter = GuestAdapter()
 
@@ -22,8 +26,12 @@ class AllFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
-    override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        allViewModel = ViewModelProvider(this)[AllViewModel::class.java]
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        guestsViewModel = ViewModelProvider(this)[GuestsViewModel::class.java]
 
         _binding = FragmentAllguestsBinding.inflate(inflater, container, false)
         val root: View = binding.root
@@ -34,21 +42,51 @@ class AllFragment : Fragment() {
 
         recycler.adapter = mAdapter
 
-        allViewModel.load()
-
         observer()
+
+        listener()
 
         return root
     }
 
-    private fun observer(){
-        allViewModel.guestList.observe(viewLifecycleOwner, Observer {
+    override fun onResume() {
+        super.onResume()
+        guestsViewModel.load()
+    }
+
+    private fun listener() {
+        mAdapter.attachListener(this)
+    }
+
+    private fun observer() {
+        guestsViewModel.guestList.observe(viewLifecycleOwner, Observer {
             mAdapter.updateGuests(it)
+        })
+
+        guestsViewModel.guestRemove.observe(viewLifecycleOwner,{
+            if(it){
+                Toast.makeText(context,"Registro Deletado",Toast.LENGTH_SHORT).show()
+                mAdapter.notifyDataSetChanged()
+            }else{
+                Toast.makeText(context,"Erro ao Deletar Registro",Toast.LENGTH_SHORT).show()
+            }
+
         })
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onclick(id: Int) {
+        val intent = Intent(context, GuestFormActivity::class.java)
+        intent.putExtra(GuestConstants.GUESTID, id)
+        startActivity(intent)
+    }
+
+    override fun onDelete(id: Int) {
+        guestsViewModel.deleteGuest(id)
+        guestsViewModel.load()
     }
 }

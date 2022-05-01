@@ -19,17 +19,26 @@ class GuestFormViewModel (application: Application): AndroidViewModel(applicatio
     private var mSaveGuest = MutableLiveData<Boolean>()
     val saveGuest: LiveData<Boolean> = mSaveGuest
 
+    private var mUpdateGuest = MutableLiveData<Boolean>()
+    val updateGuest: LiveData<Boolean> = mUpdateGuest
+
     private var mGetGuest = MutableLiveData<GuestModel>()
     val getGuest: LiveData<GuestModel> = mGetGuest
 
-    fun save(name: String, presence: Boolean) {
-       val result = mGuestRespository.save(GuestModel(name = name, presence = presence))
-        mSaveGuest.value = result
+    fun save(id:Int = 0, name: String, presence: Boolean) {
+        if(id == 0){
+            val result = mGuestRespository.save(GuestModel(name = name, presence = presence))
+            mSaveGuest.value = result
+        }else{
+            val result = mGuestRespository.update(GuestModel(name = name, presence = presence))
+            mUpdateGuest.value = result
+        }
     }
 
     fun get(id:Int){
-
         val result = mGuestRespository.get(id)
-        mGetGuest.value = result!!
+        result?.let {
+            mGetGuest.value = result!!
+        }
     }
 }

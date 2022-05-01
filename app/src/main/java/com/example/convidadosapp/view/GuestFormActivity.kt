@@ -9,11 +9,13 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.convidadosapp.viewmodel.GuestFormViewModel
 import com.example.convidadosapp.R
 import com.example.convidadosapp.databinding.ActivityGuestFormBinding
+import com.example.convidadosapp.repository.constants.GuestConstants
 
 class GuestFormActivity : AppCompatActivity(), View.OnClickListener {
 
     private lateinit var _binding: ActivityGuestFormBinding
     private lateinit var mViewModel : GuestFormViewModel
+    private var mGuestId: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,6 +26,15 @@ class GuestFormActivity : AppCompatActivity(), View.OnClickListener {
 
         setListeners()
         observe()
+        loadData()
+    }
+
+    private fun loadData(){
+        val bundle = intent.extras
+        bundle?.let {
+            mGuestId = bundle.getInt(GuestConstants.GUESTID)
+            mViewModel.get(mGuestId)
+        }
     }
 
     override fun onClick(v: View) {
@@ -34,28 +45,42 @@ class GuestFormActivity : AppCompatActivity(), View.OnClickListener {
             val name = _binding.editName.text.toString()
             val presence = _binding.radioPresence.isChecked
 
-            mViewModel.save(name, presence)
+            mViewModel.save(mGuestId,name, presence)
+
         }
     }
 
     private fun observe(){
         mViewModel.saveGuest.observe(this, {
             if(it){
-                Toast.makeText(applicationContext,"Sucesso",Toast.LENGTH_SHORT).show()
+                Toast.makeText(applicationContext,"Registro Inserido com Sucesso",Toast.LENGTH_SHORT).show()
             }else{
-                Toast.makeText(applicationContext,"Erro",Toast.LENGTH_SHORT).show()
+                Toast.makeText(applicationContext,"Erro ao Inserir",Toast.LENGTH_SHORT).show()
+            }
+            this.finish()
+        })
+
+        mViewModel.updateGuest.observe(this, {
+            if(it){
+                Toast.makeText(applicationContext,"Registro Atualizado com Sucesso",Toast.LENGTH_SHORT).show()
+            }else{
+                Toast.makeText(applicationContext,"Erro ao Atualizar",Toast.LENGTH_SHORT).show()
             }
             this.finish()
         })
 
         mViewModel.getGuest.observe(this,{
-            Toast.makeText(applicationContext,it.name,Toast.LENGTH_SHORT).show()
+            _binding.editName.setText(it.name)
+            if(it.presence)
+            {
+                _binding.radioPresence.isChecked = true
+            }else{
+                _binding.radioAbsent.isChecked = true
+            }
         })
     }
 
     private fun setListeners(){
         _binding.buttonSave.setOnClickListener(this)
     }
-
-
 }

@@ -50,6 +50,7 @@
 
         <RadioButton
             android:id="@+id/radio_presence"
+            android:checked="true"
             android:text="Presente"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
