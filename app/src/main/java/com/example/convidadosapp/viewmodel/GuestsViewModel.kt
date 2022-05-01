@@ -12,7 +12,7 @@ import java.util.logging.Filter
 
 class GuestsViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val mGuestRespository: GuestRespository = GuestRespository.getInstance(application)
+    private val mGuestRespository: GuestRespository = GuestRespository(application)
     private val mGuestList = MutableLiveData<List<GuestModel>>()
     val guestList: LiveData<List<GuestModel>> = mGuestList
 
@@ -36,6 +36,7 @@ class GuestsViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun deleteGuest(id: Int) {
-        guestRemove.value =  mGuestRespository.remove(id)
+        val guest  = mGuestRespository.get(id)
+        guestRemove.value =  true//mGuestRespository.remove(guest)
     }
 }

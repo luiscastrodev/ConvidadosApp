@@ -14,7 +14,7 @@ import com.example.convidadosapp.repository.GuestRespository
 class GuestFormViewModel (application: Application): AndroidViewModel(application) {
 
     private val mContext = application.applicationContext
-    private val mGuestRespository: GuestRespository = GuestRespository.getInstance(mContext)
+    private val mGuestRespository: GuestRespository = GuestRespository(mContext)
 
     private var mSaveGuest = MutableLiveData<Boolean>()
     val saveGuest: LiveData<Boolean> = mSaveGuest
@@ -26,11 +26,16 @@ class GuestFormViewModel (application: Application): AndroidViewModel(applicatio
     val getGuest: LiveData<GuestModel> = mGetGuest
 
     fun save(id:Int = 0, name: String, presence: Boolean) {
+        val guest = GuestModel().apply {
+            this.id = id
+            this.name = name
+            this.presence = presence
+        }
         if(id == 0){
-            val result = mGuestRespository.save(GuestModel(name = name, presence = presence))
+            val result = mGuestRespository.save(guest)
             mSaveGuest.value = result
         }else{
-            val result = mGuestRespository.update(GuestModel(name = name, presence = presence))
+            val result = mGuestRespository.update(guest)
             mUpdateGuest.value = result
         }
     }
